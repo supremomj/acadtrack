@@ -91,13 +91,41 @@ export function TaskEditor({ task, onClose }: { task: Task | null; onClose: () =
     }
     setBusy(true);
     try {
-      const body = new FormData();
-      body.set('file', file);
-      body.set('task_id', v.id);
-      const r = await fetch('/api/upload', { method: 'POST', body });
-      const result = await r.json();
-      if (!r.ok) throw new Error(result.error);
-      await reload();
+      const allowed = [
+        'application/pdf',
+        'image/png',
+        'image/jpeg',
+        'text/plain',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      ];
+      if (file.size > 10485760 || !allowed.includes(file.type))
+        throw new Error('Use a PDF, PNG, JPEG, TXT, DOCX or XLSX up to 10 MB');
+      const db = browserClient(),
+        {
+          data: { user },
+          error: authError,
+        } = await db.auth.getUser();
+      if (authError || !user) throw new Error('Please sign in before uploading a file.');
+      const path = `${user.id}/${uid()}/${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      // File bytes go straight to the private bucket. Its owner, MIME and size
+      // policies still apply; Vercel receives only the validated metadata.
+      const { error: uploadError } = await db.storage
+        .from('attachments')
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (uploadError) throw uploadError;
+      const saved = await save('task_attachments', {
+        id: uid(),
+        task_id: v.id,
+        name: file.name,
+        path,
+        size: file.size,
+        mime_type: file.type,
+      });
+      if (!saved) {
+        await db.storage.from('attachments').remove([path]);
+        return;
+      }
       notify('Attachment uploaded');
     } catch (e) {
       notify((e as Error).message);
