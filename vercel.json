@@ -1,1 +1,5 @@
-{"crons":[{"path":"/api/cron/reminders","schedule":"*/10 * * * *"}]}
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "pnpm build"
+}

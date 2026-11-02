@@ -2,6 +2,10 @@
   "name": "acadtrack",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev --webpack --hostname 127.0.0.1",
     "build": "next build --webpack",

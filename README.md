@@ -100,7 +100,17 @@ Never prefix the service-role key, VAPID private key, or email API key with `NEX
 
 ## Reminders, push, and weekly summaries
 
-`GET /api/cron/reminders` requires `Authorization: Bearer YOUR_CRON_SECRET`. `vercel.json` calls it every 10 minutes. Your Vercel plan must support this frequency; otherwise use an external server scheduler at the same frequency, with the same authorization header. Check the current [Vercel Cron documentation](https://vercel.com/docs/cron-jobs/manage-cron-jobs) before deployment.
+Vercel Hobby does not support a 10-minute cron schedule, so `vercel.json` does not
+automatically create one. For in-app reminders and weekly/daily analytics, run
+`supabase/optional/enable-reminders.sql` once in Supabase SQL Editor. This schedules
+the existing database functions every 10 minutes with Supabase Cron; it does not
+need a Vercel service-role key. The script is prepared but must be activated in
+your Supabase project.
+
+`GET /api/cron/reminders` remains available for outbound push/email delivery and
+requires `Authorization: Bearer YOUR_CRON_SECRET`. Configure a compatible external
+server scheduler, or a Vercel plan supporting the desired frequency, plus the server
+credentials listed above. Check the current [Vercel Cron documentation](https://vercel.com/docs/cron-jobs/manage-cron-jobs).
 
 The job:
 
@@ -119,13 +129,17 @@ Generate VAPID keys locally with the installed `web-push` CLI (`npx web-push gen
 ## Deploy to Vercel
 
 1. Push this project to your Git provider and import it into Vercel as a Next.js project.
-2. Use Node.js 22+, install from the committed lockfile, and run `pnpm build` (or `npm run build` if using npm).
+2. Use Node.js 24 and the pinned pnpm version. Set `ENABLE_EXPERIMENTAL_COREPACK=1` in Vercel, install from the committed lockfile, and run `pnpm build`.
 3. Add the environment variables in Vercel, including `CRON_SECRET`, and deploy.
 4. Update the Supabase site URL and allowed Auth callback URLs to the final deployment origin.
-5. Verify the scheduled job is registered and invoke it with its authorization header for an initial run.
+5. Activate the optional Supabase reminder scheduler. If enabling push/email, configure the authenticated outbound scheduler and credentials separately.
 6. Test a real account, a second isolated account, file upload/download, password reset, and a near-deadline reminder before launch.
 
-**Deployment has not been performed.** This workspace does not contain a configured Supabase project, Vercel project/account credentials, VAPID keys, or email credentials. Hosted Auth, Storage, push, and email delivery still need an integration smoke test against your services.
+The project is connected to the existing Supabase database and the Vercel project
+`supremomjs-projects/acadtrack`. Production deployment is being verified. Supabase
+authentication URLs must include the final deployment domain. VAPID, reminder email,
+and service-role credentials are not configured; optional outbound reminders and
+permanent account deletion require those server credentials before use.
 
 ## What is implemented
 
