@@ -1,0 +1,2 @@
+self.addEventListener('push',event=>{let data={title:'AcadTrack',body:'You have an academic reminder'};try{data={...data,...event.data.json()};}catch{}event.waitUntil(self.registration.showNotification(data.title,{body:data.body,icon:'/icon.svg',tag:data.id||'acadtrack',data:{url:'/'}}));});
+self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(windows=>windows.length?windows[0].focus():clients.openWindow('/')));});
