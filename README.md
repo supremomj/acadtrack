@@ -136,8 +136,10 @@ Generate VAPID keys locally with the installed `web-push` CLI (`npx web-push gen
 6. Test a real account, a second isolated account, file upload/download, password reset, and a near-deadline reminder before launch.
 
 The project is connected to the existing Supabase database and the Vercel project
-`supremomjs-projects/acadtrack`. Production deployment is being verified. Supabase
-authentication URLs must include the final deployment domain. VAPID, reminder email,
+`supremomjs-projects/acadtrack`. The production site is
+https://acadtrack-three.vercel.app. The Supabase database scheduler is active every
+ten minutes and its summary/reminder functions have been executed successfully.
+Supabase authentication URLs must include this deployment domain. VAPID, reminder email,
 and service-role credentials are not configured; optional outbound reminders and
 permanent account deletion require those server credentials before use.
 
@@ -150,7 +152,7 @@ permanent account deletion require those server credentials before use.
 | 3 · Deadlines      | FullCalendar month/week/day, event and session editing/rescheduling, confirmation on actual-deadline changes, dynamic overdue status, configurable reminders, notification history and read state, service-worker push, optional Resend email             |
 | 4 · Study & grades | Conflict-aware session suggestions, capacity limits and breaks, accept/adjust/reject recommendations, manual scheduling, persistent focus timer, focus logs, weighted grade categories/scores, target score projections and trend charts                  |
 | 5 · Insights       | Weekly completion charts, on-time counts, subject productivity and workload, planned/actual study totals, daily overdue snapshots, automatic weekly review history, timezone/theme/study/notification/grade preferences, data export and account deletion |
-| 6 · Quality        | Production build, strict TypeScript, domain tests, executable PostgreSQL migration/RLS/constraint/job tests, local browser smoke checks; external deployment verification remains                                                                         |
+| 6 · Quality        | Production build, strict TypeScript, 37 domain/database tests, executable PostgreSQL migration/RLS/constraint/job tests, local browser smoke checks, and deployed authentication boundary checks |
 
 ### Behavior and practical boundaries
 
